@@ -30,7 +30,7 @@ class NewVisitorTest(LiveServerTestCase):
         self.assertIn('Források elemzése', self.browser.title)
         firstitem = self.browser.find_element_by_id("id_item1")
         firstitem.click()
-        default_href = self.browser.find_element_by_id("id_default")
+        default_href = self.browser.find_element_by_id("id_link1")
         self.assertIn("A:00 B:01 C:10 D:11", default_href.text)
 
         # The button is large enought to click it easily.
@@ -124,19 +124,13 @@ class NewVisitorTest(LiveServerTestCase):
     def test_layout_and_styling(self):
         self.browser.get(self.live_server_url + "/sources/")
         width, height = 1024, 768
-        padding = 18
         self.browser.set_window_size(width, height)
 
-        main_div = self.browser.find_element_by_class_name('main')
+        main_div = self.browser.find_element_by_class_name('jumbotron')
         self.assertAlmostEqual(
-            main_div.size['width'],
-            1000 + 2*padding,
-            delta=3
-        )
-        self.assertAlmostEqual(
-            main_div.location['x'] - padding + main_div.size['width']/2,
+            main_div.location['x'] + main_div.size['width']/2,
             width/2,
-            delta=3
+            delta=2
         )
 
 if __name__ == "__main__":
