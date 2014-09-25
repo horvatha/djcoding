@@ -27,28 +27,73 @@ class NewVisitorTest(LiveServerTestCase):
 
     def test_sources(self):
         self.browser.get(self.live_server_url + '/sources/')
+        self.browser.set_window_size(1024, 700)
+
         self.assertIn('Források elemzése', self.browser.title)
+
         firstitem = self.browser.find_element_by_id("id_item1")
+        sleep_a_bit()
         firstitem.click()
+
         default_href = self.browser.find_element_by_id("id_link1")
         self.assertIn("A:00 B:01 C:10 D:11", default_href.text)
 
-        # The button is large enought to click it easily.
-        # self.assertGreater(default_href.size['height'], 99)
+        appearing_texts = ['<th>Kód', 'üzenet']
+        disappearing_texts = ['A:00 B:01 C:10 D:11']
+        self.assertAreNotInPage(appearing_texts)
 
-        self.assertAreNotInPage(['<th>Kód', 'üzenet'])
+        sleep_a_bit()
         default_href.click()
 
-        self.assertAreInPage(['<th>Kód', 'üzenet'])
-        self.assertNotIn("A:00 B:01 C:10 D:11", self.browser.page_source)
+        self.assertAreInPage(appearing_texts)
+        self.assertAreNotInPage(disappearing_texts)
 
-        # edit_code_href = self.browser.find_element_by_id("edit_code")
-        # edit_code_href.click()
+        appearing_texts = ["django", "webkeretrendszer", "github"]
+        self.assertAreNotInPage(appearing_texts)
 
-        # # TODO edit the codes
-        # back_href = self.browser.find_element_by_id("go_back")
-        # back_href.click()
-        # sleep_a_bit()
+        about_link = self.browser.find_element_by_partial_link_text("oldalról")
+        sleep_a_bit()
+        about_link.click()
+
+        self.assertAreInPage(appearing_texts)
+
+        appearing_texts = ["mailto", "elerhetoseg.htm", "írja"]
+        self.assertAreNotInPage(appearing_texts)
+
+        about_link = self.browser.find_element_by_partial_link_text("Kapcsolat")
+        sleep_a_bit()
+        about_link.click()
+
+        appearing_texts = ["Eltérő valószínűségű jelekből", "Kenobi"]
+        self.assertAreNotInPage(appearing_texts)
+
+        home_link = self.browser.find_element_by_link_text("Főoldal")
+        sleep_a_bit()
+        home_link.click()
+
+        self.assertAreInPage(appearing_texts)
+
+        kenobi_source_link = \
+            self.browser.find_element_by_partial_link_text("Kenobi")
+        sleep_a_bit()
+        kenobi_source_link.click()
+
+        kenobi_code_link = \
+            self.browser.find_element_by_partial_link_text("D:000101")
+        sleep_a_bit()
+        kenobi_code_link.click()
+
+        kenobi_chain_link = \
+            self.browser.find_element_by_partial_link_text("lánc")
+
+        appearing_texts = ["hibamentes"]
+        self.assertAreNotInPage(appearing_texts)
+
+        sleep_a_bit()
+        kenobi_chain_link.click()
+
+        self.assertAreInPage(appearing_texts + ["<table"])
+        self.browser.find_element_by_partial_link_text("változta")
 
         self.fail("Finish the test!")
 
