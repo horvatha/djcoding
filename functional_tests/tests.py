@@ -27,6 +27,7 @@ class NewVisitorTest(LiveServerTestCase):
 
     def test_sources(self):
         self.browser.get(self.live_server_url + '/sources/')
+        # self.browser.get("http://django.arek.uni-obuda.hu/django/sources")
         self.browser.set_window_size(1024, 700)
 
         self.assertIn('Források elemzése', self.browser.title)
@@ -48,7 +49,7 @@ class NewVisitorTest(LiveServerTestCase):
         self.assertAreInPage(appearing_texts)
         self.assertAreNotInPage(disappearing_texts)
 
-        appearing_texts = ["django", "webkeretrendszer", "github"]
+        appearing_texts = ["djangoproject.com", "webkeretrendszer", "github"]
         self.assertAreNotInPage(appearing_texts)
 
         about_link = self.browser.find_element_by_partial_link_text("oldalról")
@@ -93,7 +94,26 @@ class NewVisitorTest(LiveServerTestCase):
         kenobi_chain_link.click()
 
         self.assertAreInPage(appearing_texts + ["<table"])
-        self.browser.find_element_by_partial_link_text("változta")
+        chain_with_error = \
+            self.browser.find_element_by_partial_link_text("és hibás")
+
+        appearing_texts = [
+            "<tr><td>I_LOVE_YOU</td></tr>",
+            "<tr><td>I_LOVE_LOU</td></tr>",
+            "<tr><td>00001001010110011110010001100011</td></tr>",
+        ]
+        self.assertAreNotInPage(appearing_texts)
+
+        chain_with_error.click()
+
+        self.assertAreInPage(appearing_texts)
+
+        chain_with_error_correction = \
+            self.browser.find_element_by_partial_link_text("hibajavítás")
+
+        chain_with_error_correction.click()
+
+        self.assertAreNotInPage(["I_LOVE_LOU"])
 
         self.fail("Finish the test!")
 
