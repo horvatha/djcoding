@@ -25,7 +25,7 @@ class NewVisitorTest(LiveServerTestCase):
     def tearDown(self):
         self.browser.quit()
 
-    def test_sources(self):
+    def test_surfing_on_the_page(self):
         self.browser.get(self.live_server_url + '/sources/')
         # self.browser.get("http://django.arek.uni-obuda.hu/django/sources")
         self.browser.set_window_size(1024, 700)
@@ -98,9 +98,9 @@ class NewVisitorTest(LiveServerTestCase):
             self.browser.find_element_by_partial_link_text("és hibás")
 
         appearing_texts = [
-            "<tr><td>I_LOVE_YOU</td></tr>",
-            "<tr><td>I_LOVE_LOU</td></tr>",
-            "<tr><td>00001001010110011110010001100011</td></tr>",
+            '<tr><td>10</td><td><span class="match">I_LOVE_</span>',
+            '<tr><td>10</td><td><span class="match">I_LOVE_</span>',
+            '<tr><td>32</td><td><span class="match">0000',
         ]
         self.assertAreNotInPage(appearing_texts)
 
@@ -114,8 +114,6 @@ class NewVisitorTest(LiveServerTestCase):
         chain_with_error_correction.click()
 
         self.assertAreNotInPage(["I_LOVE_LOU"])
-
-        self.fail("Finish the test!")
 
     def assertAreNotInPage(self, text_list):
         for text in text_list:
