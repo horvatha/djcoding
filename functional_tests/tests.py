@@ -15,18 +15,30 @@ def sleep_a_bit():
     time.sleep(0)
 
 
-class NewVisitorTest(LiveServerTestCase):
+class MyLiveServerTestCase(LiveServerTestCase):
+
+    def assertAreNotInPage(self, text_list):
+        for text in text_list:
+            self.assertNotIn(text, self.browser.page_source)
+
+    def assertAreInPage(self, text_list):
+        for text in text_list:
+            self.assertIn(text, self.browser.page_source)
+
+
+class NewVisitorTest(MyLiveServerTestCase):
     """TestGroup"""
 
     def setUp(self):
         self.browser = webdriver.Firefox()
         self.browser.implicitly_wait(3)
+        self.server_url = self.live_server_url
 
     def tearDown(self):
         self.browser.quit()
 
     def test_surfing_on_the_page(self):
-        self.browser.get(self.live_server_url + '/sources/')
+        self.browser.get(self.server_url + '/sources/')
         # self.browser.get("http://django.arek.uni-obuda.hu/django/sources")
         self.browser.set_window_size(1024, 700)
 
@@ -94,11 +106,37 @@ class NewVisitorTest(LiveServerTestCase):
         kenobi_chain_link.click()
 
         self.assertAreInPage(appearing_texts + ["<table"])
+
+        self.assertIn("sources/3/1/0/", self.browser.current_url)
+
+        # TODO see the test below
+        # chain_with_error = \
+        #     self.browser.find_element_by_partial_link_text(
+        #         "Fix forrás és hibás csatorna")
+
+        # appearing_texts = [
+        #     '<tr><td>10</td><td><span class="match">I_LOVE_</span>',
+        #     '<tr><td>32</td><td><span class="match">0000',
+        # ]
+        # self.assertAreNotInPage(appearing_texts)
+
+        # chain_with_error.click()
+
+        # self.assertAreInPage(appearing_texts)
+
+        chain_with_error_correction = \
+            self.browser.find_element_by_partial_link_text("hibajavítás")
+
+        chain_with_error_correction.click()
+
+    # TODO It works in a way I can not recreate manually
+    def test_visitor_can_click_on_source_with_error_button(self):
+        self.browser.get(self.server_url + '/sources/3/1/0/')
         chain_with_error = \
-            self.browser.find_element_by_partial_link_text("és hibás")
+            self.browser.find_element_by_partial_link_text(
+                "Fix forrás és hibás csatorna")
 
         appearing_texts = [
-            '<tr><td>10</td><td><span class="match">I_LOVE_</span>',
             '<tr><td>10</td><td><span class="match">I_LOVE_</span>',
             '<tr><td>32</td><td><span class="match">0000',
         ]
@@ -108,84 +146,8 @@ class NewVisitorTest(LiveServerTestCase):
 
         self.assertAreInPage(appearing_texts)
 
-        chain_with_error_correction = \
-            self.browser.find_element_by_partial_link_text("hibajavítás")
-
-        chain_with_error_correction.click()
-
-        self.assertAreNotInPage(["I_LOVE_LOU"])
-
-    def assertAreNotInPage(self, text_list):
-        for text in text_list:
-            self.assertNotIn(text, self.browser.page_source)
-
-    def assertAreInPage(self, text_list):
-        for text in text_list:
-            self.assertIn(text, self.browser.page_source)
-
-    # def test_can_start_a_list_and_retrieve_it_later(self):
-    #     self.browser.get(self.live_server_url)
-    #     self.assertIn('To-Do', self.browser.title)
-    #     header_text = self.browser.find_element_by_tag_name('h1').text
-    #     self.assertIn('To-Do', header_text)
-    #     inputbox = self.browser.find_element_by_id('id_new_item')
-    #     self.assertEqual(inputbox.get_attribute('placeholder'),
-    #                      'Enter a to-do item')
-    #     sleep_a_bit()
-    #     inputbox.send_keys('Repair the bicycle')
-    #     inputbox.send_keys(Keys.ENTER)
-    #     sleep_a_bit()
-    #     edith_list_url = self.browser.current_url
-    #     self.assertRegex(edith_list_url, '/lists/.+')
-    #     self.check_for_row_in_list_table('1: Repair the bicycle')
-
-    #     inputbox = self.browser.find_element_by_id('id_new_item')
-    #     self.assertEqual(inputbox.get_attribute('placeholder'),
-    #                      'Enter a to-do item')
-    #     sleep_a_bit()
-    #     inputbox.send_keys('Take a bicycle tour')
-    #     sleep_a_bit()
-    #     inputbox.send_keys(Keys.ENTER)
-    #     sleep_a_bit()
-    #     for row_text in ('1: Repair the bicycle', '2: Take a bicycle tour'):
-    #         self.check_for_row_in_list_table(row_text)
-
-    #     # A new user Francis comes along the site
-    #     self.browser.quit()
-    #     ## We use a new browser session to make sure there is no
-    #     ## trace of Edith's through cokies or etc
-    #     self.browser = webdriver.Firefox()
-
-    #     # Francis visits the home page
-    #     # There is no sign of Edith's list
-    #     self.browser.get(self.live_server_url)
-    #     page_text = self.browser.find_element_by_tag_name('body').text
-    #     self.assertNotIn('Repair the bicycle', page_text)
-    #     self.assertNotIn('bicycle', page_text)
-
-    #     # Francis starts a new list
-    #     # There is no sign of Edith's list
-    #     inputbox = self.browser.find_element_by_id('id_new_item')
-    #     inputbox.send_keys('Buy milk')
-    #     inputbox.send_keys(Keys.ENTER)
-    #     francis_list_url = self.browser.current_url
-    #     self.assertRegex(francis_list_url, '/lists/.+')
-    #     sleep_a_bit()
-    #     self.assertNotEqual(francis_list_url, edith_list_url)
-    #     self.check_for_row_in_list_table('1: Buy milk')
-
-    #     # Again there is no trace of Edith's list
-    #     page_text = self.browser.find_element_by_tag_name('body').text
-    #     self.assertNotIn('Repair the bicycle', page_text)
-    #     self.assertIn('Buy milk', page_text)
-
-    # def check_for_row_in_list_table(self, row_text):
-    #     table = self.browser.find_element_by_id('id_list_table')
-    #     rows = table.find_elements_by_tag_name('tr')
-    #     self.assertIn(row_text, [row.text for row in rows])
-
     def test_layout_and_styling(self):
-        self.browser.get(self.live_server_url + "/sources/")
+        self.browser.get(self.server_url + "/sources/")
         width, height = 1024, 768
         self.browser.set_window_size(width, height)
 
@@ -195,6 +157,34 @@ class NewVisitorTest(LiveServerTestCase):
             width/2,
             delta=2
         )
+
+
+class ChangeChainTest(MyLiveServerTestCase):
+
+    def setUp(self):
+        self.browser = webdriver.Firefox()
+        self.browser.implicitly_wait(3)
+        self.server_url = self.live_server_url
+        self.browser.get(self.server_url + '/sources/1/1/0/')
+
+    def tearDown(self):
+        self.browser.quit()
+
+    def test_visitor_can_change_channel(self):
+        self.assertAreInPage(["A:1/4 B:1/4 C:1/4 D:1/4", "hibamentes csatorna"])
+        inputbox = self.browser.find_element_by_id('id_channel_change')
+        self.assertEqual(inputbox.get_attribute('placeholder'),
+                         "Változtatáshoz csatornaleíró és Újsor.")
+        inputbox.send_keys('8\n')
+        self.assertAreInPage(["8 hibával"])
+
+    def test_visitor_can_change_source(self):
+        inputbox = self.browser.find_element_by_id('id_source_change')
+        self.assertEqual(inputbox.get_attribute('placeholder'),
+                         "Változtatáshoz forrásleíró és Újsor.")
+        inputbox.send_keys('A:1/2 B:1/4 C:1/8 D:1/8\n')
+        self.assertAreInPage(["A:1/2 B:1/4 C:1/8 D:1/8"])
+
 
 if __name__ == "__main__":
     unittest.main(warnings="ignore")
