@@ -7,6 +7,7 @@ from django.views.generic import TemplateView
 urlpatterns = patterns(
     '',
     url(r'^sources/', include('sources.urls')),
+    url(r'^arithmetic/', include('sources.arithmetic.urls')),
     url(r'^contact/', TemplateView.as_view(template_name="contact.html"),
         name="contact"),
     url(r'^about/', TemplateView.as_view(template_name="about.html"),
