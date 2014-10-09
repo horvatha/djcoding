@@ -33,13 +33,13 @@ class NewVisitorTest(MyLiveServerTestCase):
         self.browser = webdriver.Firefox()
         self.browser.implicitly_wait(3)
         self.server_url = self.live_server_url
+        # self.server_url = "http://django.amk.uni-obuda.hu/django"
 
     def tearDown(self):
         self.browser.quit()
 
     def test_surfing_on_the_page(self):
         self.browser.get(self.server_url + '/sources/')
-        # self.browser.get("http://django.arek.uni-obuda.hu/django/sources")
         self.browser.set_window_size(1024, 700)
 
         self.assertIn('Források elemzése', self.browser.title)
@@ -130,7 +130,7 @@ class NewVisitorTest(MyLiveServerTestCase):
         chain_with_error_correction.click()
 
     # TODO It works in a way I can not recreate manually
-    def test_visitor_can_click_on_source_with_error_button(self):
+    def test_visitor_can_click_on_channel_with_error_button(self):
         self.browser.get(self.server_url + '/sources/3/1/0/')
         chain_with_error = \
             self.browser.find_element_by_partial_link_text(
@@ -144,7 +144,12 @@ class NewVisitorTest(MyLiveServerTestCase):
 
         chain_with_error.click()
 
+        chain_with_error_correction = \
+            self.browser.find_element_by_partial_link_text("hibajavítás")
+
         self.assertAreInPage(appearing_texts)
+
+        chain_with_error_correction.click()
 
     def test_layout_and_styling(self):
         self.browser.get(self.server_url + "/sources/")
