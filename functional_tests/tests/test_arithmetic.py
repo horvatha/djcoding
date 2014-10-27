@@ -41,20 +41,22 @@ class VisitorTest(MyLiveServerTestCase):
         self.browser.get(self.server_url + '/arithmetic/')
         self.browser.set_window_size(1024, 700)
 
-        coding_link = self.browser.find_element_by_partial_link_text("Kódolás")
+        coding_link = self.browser.find_element_by_partial_link_text(
+            'Kódolás gyak')
 
         sleep_a_bit()
         coding_link.click()
 
-        self.assertTrue(self.browser.current_url.endswith('coding/random/'))
+        self.assertTrue(
+            self.browser.current_url.endswith('coding/random/exercise/'))
 
         self.browser.get(self.server_url + '/arithmetic/')
-        decoding_link = self.browser.find_element_by_link_text("Dekódolás")
+
+        decoding_link = self.browser.find_element_by_partial_link_text(
+            "Dekódolás")
 
         sleep_a_bit()
         decoding_link.click()
-
-        self.assertFail("Finish test.")
 
 
 if __name__ == "__main__":

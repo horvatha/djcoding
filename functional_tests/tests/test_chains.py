@@ -48,6 +48,8 @@ class NewVisitorTest(MyLiveServerTestCase):
         sleep_a_bit()
         firstitem.click()
 
+        self.assertAreInPage(['forrás entrópiája', 'hatásfok', 'redundancia'])
+
         default_href = self.browser.find_element_by_id("id_link1")
         self.assertIn("A:00 B:01 C:10 D:11", default_href.text)
 
@@ -97,7 +99,7 @@ class NewVisitorTest(MyLiveServerTestCase):
         kenobi_code_link.click()
 
         kenobi_chain_link = \
-            self.browser.find_element_by_partial_link_text("lánc")
+            self.browser.find_element_by_partial_link_text("rendszer")
 
         appearing_texts = ["hibamentes"]
         self.assertAreNotInPage(appearing_texts)
