@@ -133,7 +133,7 @@ class NewVisitorTest(MyLiveServerTestCase):
 
     # TODO It works in a way I can not recreate manually
     def test_visitor_can_click_on_channel_with_error_button(self):
-        self.browser.get(self.server_url + '/sources/3/1/0/')
+        self.browser.get(self.server_url + '/sources/3/1/0/0/')
         chain_with_error = \
             self.browser.find_element_by_partial_link_text(
                 "Fix forrás és hibás csatorna")
@@ -172,7 +172,7 @@ class ChangeChainTest(MyLiveServerTestCase):
         self.browser = webdriver.Firefox()
         self.browser.implicitly_wait(3)
         self.server_url = self.live_server_url
-        self.browser.get(self.server_url + '/sources/1/1/0/')
+        self.browser.get(self.server_url + '/sources/1/1/0/0/')
 
     def tearDown(self):
         self.browser.quit()

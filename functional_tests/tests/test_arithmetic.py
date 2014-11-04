@@ -58,6 +58,15 @@ class VisitorTest(MyLiveServerTestCase):
         sleep_a_bit()
         decoding_link.click()
 
+        solution_link = self.browser.find_element_by_xpath(
+            "//input[@value='Megoldás']")
+
+        sleep_a_bit()
+        solution_link.click()
+        headers = ["<th>{}</th>".format(text) for text
+                   in ["Jel", "alsó határ", "felső határ", "valószínűség"]]
+        self.assertAreInPage(headers)
+
 
 if __name__ == "__main__":
     unittest.main(warnings="ignore")
